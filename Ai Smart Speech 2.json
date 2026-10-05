@@ -1,0 +1,205 @@
+{
+  "name": "Ai Smart Speech 2",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "{{$json.body.text}}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a professional podcast script writer.  Write a conversational and engaging podcast script on the topic: {{$json.body.text}}.  Keep it around 2 minutes when spoken. Use a friendly and informative tone, as if talking directly to listeners. Avoid any headings, labels, or formatting. Output plain text only."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        256,
+        -16
+      ],
+      "id": "60acb0f8-66e1-4773-bdd8-b7b075bbbaa4",
+      "name": "Speech Generator"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        240
+      ],
+      "id": "32cdb1df-052b-43ff-bd93-f01ff386e938",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yLvQz4IcViYKxaPq",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.murf.ai/v1/speech/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "ap2_40393732-d1b7-46f0-a900-fc9706109510"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "name": "voiceId",
+              "value": "Terrell"
+            },
+            {
+              "name": "locale",
+              "value": "en-US"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        752,
+        16
+      ],
+      "id": "b6c51918-57a3-4bb4-8147-69f1aff8f3a6",
+      "name": "murf.ai"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.audioFile }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1056,
+        32
+      ],
+      "id": "15b8c617-5b09-4488-a46f-6df0d3fe7fb5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {
+          "enableStreaming": true
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1312,
+        80
+      ],
+      "id": "34359649-c485-4220-8ae8-e539394811be",
+      "name": "Respond to Webhook",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8d670971-d06b-4d12-8d30-26e9e71e6892",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "008b521e-97aa-482e-862d-9486a46cf8e9",
+      "name": "Webhook",
+      "webhookId": "8d670971-d06b-4d12-8d30-26e9e71e6892"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Speech Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Speech Generator": {
+      "main": [
+        [
+          {
+            "node": "murf.ai",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "murf.ai": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Speech Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "12a8ddd4-b266-45f3-8926-aa7992135751",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "de463199ba15e63456511d65a214262667953a68b34e96726661799ec26c9adf"
+  },
+  "nodeGroups": [],
+  "id": "xGus2MyVed50MVq1",
+  "tags": []
+}
