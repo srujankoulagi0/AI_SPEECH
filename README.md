@@ -1,0 +1,1 @@
+Invoke-WebRequest -Uri "http://localhost:5678/webhook-test/8d670971-d06b-4d12-8d30-26e9e71e6892" -Method POST -ContentType "application/json" -Body '{"text":"     "}'    RUN THIS IN THE TERMINL OR WINDOWS POWER CELL.   YOU WILL GET THE AUDIO OF THAT WHAT YOU WANT ABOUT THE TOPIC
